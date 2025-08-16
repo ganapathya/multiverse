@@ -17,7 +17,7 @@ A powerful Chrome extension for organizing browsing into AI-enhanced workspaces 
 ### Prerequisites
 
 - Node.js 18+
-- npm (included with Node.js) or pnpm (recommended)
+- pnpm (recommended) or npm
 - Chrome/Chromium browser for testing
 
 ### Installation
@@ -27,15 +27,36 @@ A powerful Chrome extension for organizing browsing into AI-enhanced workspaces 
 git clone <repository-url>
 cd multiverse
 
-# Install dependencies (choose one)
-npm run install:all  # Using npm
-# OR
-pnpm install         # Using pnpm (if available)
+# Install pnpm (if not already installed)
+npm install -g pnpm
+
+# Install dependencies
+pnpm install
 ```
 
 ### Development Commands
 
-#### Using npm (default)
+#### Using pnpm (recommended)
+
+```bash
+# Development mode (watch rebuilds)
+pnpm -w dev
+
+# Production build
+pnpm -w build
+
+# Create extension zip for publishing
+pnpm -w zip
+
+# Code quality
+pnpm -w lint
+pnpm -w type-check
+
+# Clean and reset
+pnpm clean && pnpm install
+```
+
+#### Using npm (fallback)
 
 ```bash
 # Development mode (watch rebuilds)
@@ -56,32 +77,12 @@ npm run clean
 npm run reset
 ```
 
-#### Using pnpm (if available)
-
-```bash
-# Development mode (watch rebuilds)
-pnpm -w dev
-
-# Production build
-pnpm -w build
-
-# Create extension zip for publishing
-pnpm -w zip
-
-# Code quality
-pnpm -w lint
-pnpm -w type-check
-
-# Clean build artifacts
-pnpm clean && pnpm install
-```
-
 ### Loading the Extension
 
 1. **Build the extension:**
 
    ```bash
-   npm run build
+   pnpm -w build
    ```
 
 2. **Open Chrome Extensions:**
@@ -101,7 +102,7 @@ pnpm clean && pnpm install
 
 ```bash
 # Start development servers
-npm run dev
+pnpm -w dev
 
 # In another terminal, watch for changes and reload extension
 # (You'll need to manually reload in chrome://extensions/ for now)
