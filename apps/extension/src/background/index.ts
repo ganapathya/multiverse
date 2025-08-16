@@ -11,6 +11,12 @@ interface Task {
   status: 'queued' | 'processing' | 'completed' | 'failed';
   createdAt: number;
   updatedAt: number;
+  error?: string;
+  result?: {
+    summary: string;
+    key_points: string[];
+    actions: string[];
+  };
 }
 
 // Focus mode storage
@@ -287,6 +293,16 @@ class BackgroundScript {
 
         case 'getFocusModeState':
           sendResponse({ success: true, state: this.focusModeState });
+          break;
+
+        case 'processTask':
+          await this.processTask(message.data as { taskId: string });
+          sendResponse({ success: true });
+          break;
+
+        case 'deleteTask':
+          await this.deleteTask(message.data as { taskId: string });
+          sendResponse({ success: true });
           break;
 
         default:
@@ -572,6 +588,78 @@ class BackgroundScript {
     } catch (error) {
       console.warn('Failed to get all tasks:', error);
       return [];
+    }
+  }
+
+  private async processTask(data: { taskId: string }) {
+    try {
+      const task = (await this.getAllTasks()).find((t) => t.id === data.taskId);
+
+      if (!task) {
+        console.warn('Task not found:', data.taskId);
+        return;
+      }
+
+      if (task.status !== 'queued') {
+        console.warn('Task is not in queued state:', task.status);
+        return;
+      }
+
+      // Update task status to processing
+      await this.updateTask({
+        taskId: data.taskId,
+        updates: { status: 'processing' },
+      });
+
+      // Send message to popup to handle the actual AI processing
+      // This allows the popup to handle the OpenAI API call with proper CORS handling
+      try {
+        const tabs = await chrome.tabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        if (tabs.length > 0) {
+          await chrome.tabs.sendMessage(tabs[0].id!, {
+            action: 'processTaskInPopup',
+            data: { taskId: data.taskId, task },
+          });
+        }
+      } catch (error) {
+        console.warn('Failed to send task processing message to popup:', error);
+
+        // Update task status to failed if we can't communicate with popup
+        await this.updateTask({
+          taskId: data.taskId,
+          updates: {
+            status: 'failed',
+            error: 'Failed to communicate with popup for processing',
+          },
+        });
+      }
+    } catch (error) {
+      console.warn('Failed to process task:', error);
+
+      // Update task status to failed
+      await this.updateTask({
+        taskId: data.taskId,
+        updates: {
+          status: 'failed',
+          error: error.message,
+        },
+      });
+    }
+  }
+
+  private async deleteTask(data: { taskId: string }) {
+    try {
+      const allTasks = await this.getAllTasks();
+      const filteredTasks = allTasks.filter((task) => task.id !== data.taskId);
+      await chrome.storage.local.set({ mv_tasks: filteredTasks });
+
+      console.log('Task deleted:', data.taskId);
+    } catch (error) {
+      console.warn('Failed to delete task:', error);
+      throw error;
     }
   }
 

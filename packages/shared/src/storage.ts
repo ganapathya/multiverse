@@ -33,6 +33,7 @@ export interface Workspace {
   id: WorkspaceId;
   name: string;
   description?: string;
+  contextPrimer?: string;
   createdAt: number;
   updatedAt: number;
   isActive: boolean;

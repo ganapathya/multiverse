@@ -21,6 +21,7 @@ export interface Highlight {
 
 export interface Settings {
   openaiApiKey?: string;
+  openaiModel?: string;
   notionApiKey?: string;
   notionIntegrationEnabled: boolean;
   focusModeEnabled: boolean;
@@ -33,6 +34,7 @@ export interface Workspace {
   id: WorkspaceId;
   name: string;
   description?: string;
+  contextPrimer?: string;
   createdAt: number;
   updatedAt: number;
   isActive: boolean;

@@ -6,10 +6,11 @@
     "dev": "vite build --watch --mode development",
     "build": "vite build && npm run copy-html",
     "copy-html": "cp dist/src/popup/index.html dist/popup.html && cp dist/src/options/index.html dist/options.html",
-    "zip": "npm run build && cd dist && zip -r ../extension.zip .",
+    "zip": "npm run build && cd dist && zip -r ../context-switchboard.zip .",
     "lint": "eslint src --ext .ts,.tsx",
     "lint:fix": "eslint src --ext .ts,.tsx --fix",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist *.zip"
   },
   "dependencies": {
     "react": "^18.2.0",

@@ -1,187 +1,378 @@
-# Multiverse Chrome Extension
+# Multiverse - Context Switchboard
 
-A Manifest V3 Chrome extension that organizes your browsing into workspaces with AI-powered features.
+A powerful Chrome extension for organizing browsing into AI-enhanced workspaces with intelligent content analysis, highlighting, and task management.
 
-## Features
+## 🚀 Features
 
-### Core Functionality
+- **🌌 Workspace Management**: Organize tabs into themed workspaces
+- **🤖 AI-Powered Analysis**: OpenAI integration with customizable workspace primers
+- **📝 Smart Highlighting**: Save and analyze text selections across websites
+- **📋 Task Automation**: AI summarization with context-aware prompts
+- **🎯 Focus Mode**: Hide non-workspace tabs for distraction-free browsing
+- **📤 Data Export**: Complete workspace backups with JSON export
+- **⚡ Quick Notes**: Workspace-scoped note-taking with auto-save
 
-- **Workspaces**: Create, rename, delete, and switch between different browsing contexts
-- **Tab Set Management**: Save and restore sets of tabs per workspace
-- **Focus Mode**: Hide non-workspace tabs with one-click restore
-- **Context Menu Integration**: Right-click to "Summarize in current workspace"
-- **Highlight-to-Save**: Select text on any page to save it to the current workspace
-- **Options Page**: Configure API keys (OpenAI) and integrations (Notion toggle)
-
-### Technical Features
-
-- Manifest V3 compliant with service worker background script
-- TypeScript throughout with strict type checking
-- React-based popup and options UI with Tailwind CSS
-- Chrome storage abstraction (sync for config, local for larger data)
-- Content script injection via chrome.scripting
-- Secure API key storage (local only, never transmitted except to intended APIs)
-
-## Project Structure
-
-```
-multiverse/
-├── apps/
-│   └── extension/          # Main Chrome extension
-│       ├── src/
-│       │   ├── popup/      # Extension popup (React)
-│       │   ├── options/    # Options page (React)
-│       │   ├── content/    # Content script
-│       │   ├── background/ # Service worker
-│       │   ├── components/ # Shared React components
-│       │   ├── shared/     # Shared utilities and types
-│       │   └── styles/     # Global styles
-│       └── public/
-│           └── icons/      # Extension icons
-├── packages/
-│   └── shared/            # Shared types and utilities (TypeScript)
-│       └── src/
-│           ├── types.ts   # TypeScript interfaces
-│           ├── storage.ts # Chrome storage abstraction
-│           └── utils.ts   # Utility functions
-└── package.json          # Monorepo configuration
-```
-
-## Getting Started
+## 🛠️ Development Setup
 
 ### Prerequisites
 
 - Node.js 18+
-- npm (comes with Node.js)
+- npm (included with Node.js) or pnpm (recommended)
+- Chrome/Chromium browser for testing
 
 ### Installation
 
-1. Clone the repository:
-
 ```bash
+# Clone repository
 git clone <repository-url>
 cd multiverse
+
+# Install dependencies (choose one)
+npm run install:all  # Using npm
+# OR
+pnpm install         # Using pnpm (if available)
 ```
 
-2. Install dependencies:
+### Development Commands
+
+#### Using npm (default)
 
 ```bash
-npm install
-cd packages/shared && npm install
-cd ../../apps/extension && npm install
-cd ../..
-```
+# Development mode (watch rebuilds)
+npm run dev
 
-3. Build the extension:
-
-```bash
+# Production build
 npm run build
+
+# Create extension zip for publishing
+npm run zip
+
+# Code quality
+npm run lint
+npm run type-check
+
+# Clean and reset
+npm run clean
+npm run reset
 ```
 
-4. Create distribution package:
+#### Using pnpm (if available)
 
 ```bash
-npm run zip
+# Development mode (watch rebuilds)
+pnpm -w dev
+
+# Production build
+pnpm -w build
+
+# Create extension zip for publishing
+pnpm -w zip
+
+# Code quality
+pnpm -w lint
+pnpm -w type-check
+
+# Clean build artifacts
+pnpm clean && pnpm install
 ```
 
-The built extension will be in `apps/extension/dist/` and a zip file will be created at `apps/extension/extension.zip`.
+### Loading the Extension
 
-## Development
+1. **Build the extension:**
 
-### Available Scripts
+   ```bash
+   npm run build
+   ```
 
-From the root directory:
+2. **Open Chrome Extensions:**
+   - Navigate to `chrome://extensions/`
+   - Enable "Developer mode" (top-right toggle)
 
-- `npm run build` - Build both shared package and extension
-- `npm run dev` - Start development mode with file watching
-- `npm run lint` - Run ESLint on all packages
-- `npm run lint:fix` - Fix linting issues
-- `npm run type-check` - Run TypeScript type checking
-- `npm run zip` - Build and create extension zip
+3. **Load unpacked extension:**
+   - Click "Load unpacked"
+   - Select the `apps/extension/dist` folder
+   - The extension should appear in your extensions list
 
-From the extension directory (`apps/extension/`):
-
-- `npm run build` - Build the extension
-- `npm run dev` - Development build with watching
-- `npm run zip` - Build and zip extension
-
-### Loading the Extension in Chrome
-
-1. Build the extension: `npm run build`
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" in the top right
-4. Click "Load unpacked"
-5. Select the `apps/extension/dist/` directory
-6. The extension should now appear in your extensions list
+4. **Pin the extension:**
+   - Click the puzzle piece icon in Chrome toolbar
+   - Pin "Multiverse" for easy access
 
 ### Development Workflow
 
-1. Make changes to the source code
-2. Run `npm run build` to rebuild
-3. Reload the extension in Chrome (`chrome://extensions/` → reload button)
-4. Test your changes
+```bash
+# Start development servers
+npm run dev
 
-For active development, you can use `npm run dev` to watch for file changes, but you'll still need to reload the extension in Chrome after each rebuild.
+# In another terminal, watch for changes and reload extension
+# (You'll need to manually reload in chrome://extensions/ for now)
+```
 
-## Architecture
+**Note:** During development, you'll need to click the refresh button in `chrome://extensions/` after making changes to the background script or manifest. Popup and options page changes reload automatically.
 
-### Storage System
+## 🔒 Security & Privacy
 
-The extension uses a thin storage abstraction (`packages/shared/src/storage.ts`) that automatically routes data:
+### API Key Storage
 
-- **chrome.storage.sync**: Small configuration data (API keys, settings)
-- **chrome.storage.local**: Larger payloads (workspaces, tab sets, saved text)
+- **Local Storage Only**: API keys stored in `chrome.storage.local`, never transmitted except to authorized APIs
+- **No Key Bundling**: API keys never included in extension package
+- **User Control**: Users configure their own OpenAI API keys in Options page
 
-### Component Structure
+### Content Security Policy
 
-- **Popup**: Main interface for workspace management and quick actions
-- **Options Page**: Configuration for API keys and integration settings
-- **Content Script**: Handles text selection and page interaction
-- **Service Worker**: Background processing, context menus, tab management
+- **Strict CSP**: No inline scripts, eval(), or unsafe code execution
+- **Trusted Sources**: Only allows specific domains for external resources
+- **Remote Code**: No remote code execution or dynamic script loading
 
-### Data Flow
+### Data Privacy
 
-1. User interactions in popup/options update storage via the storage abstraction
-2. Content script listens for text selection and saves to current workspace
-3. Service worker handles background tasks and context menu actions
-4. All components communicate via Chrome messaging APIs
+- **Local Data**: All workspace data stored locally in browser
+- **No Analytics**: No tracking, telemetry, or usage analytics
+- **Minimal Permissions**: Follows least-privilege principle (see permissions rationale below)
 
-## Configuration
+### Network Requests
 
-### API Keys
+- **OpenAI Only**: Network requests limited to OpenAI API endpoints
+- **User Initiated**: API calls only triggered by explicit user actions
+- **No Background Sync**: No automatic data synchronization or uploads
 
-Configure API keys in the Options page (`chrome://extensions/` → Multiverse → Details → Extension options):
+## 📋 Permissions Rationale
 
-- **OpenAI API Key**: Required for AI summarization features
-- **Notion API Key**: Required for Notion integration (when enabled)
+The extension requests the following permissions with specific justifications:
 
-API keys are stored locally in `chrome.storage.local` and never transmitted except to their intended endpoints.
+### Core Permissions
 
-### Features
+- **`tabs`**: Query current window tabs to save/restore tab sets and implement workspace switching
+  - _Least-privilege_: Queries limited to active window when possible
+  - _Alternative_: No viable alternative for tab management features
 
-- **Focus Mode**: Automatically hide non-workspace tabs
-- **Auto-save Tab Sets**: Automatically save tab sets when switching workspaces
-- **Notion Integration**: Enable Notion integration features
+- **`storage`**: Persist workspaces, highlights, and user preferences
+  - _Data_: Uses `chrome.storage.local` for large data, `chrome.storage.sync` for small config
+  - _Scope_: Only stores user-generated content and preferences
 
-## Security
+- **`activeTab`**: Access current tab content when user explicitly invokes actions
+  - _Trigger_: Only activated by user gestures (popup clicks, context menu)
+  - _Alternative_: Preferred over broad host permissions for one-time access
 
-- API keys are stored locally and never transmitted to external servers except their intended APIs
-- Content script only activates on user text selection
-- All permissions follow the principle of least privilege
-- No external dependencies in production build
+### Feature Permissions
 
-## Browser Compatibility
+- **`contextMenus`**: Create right-click "Summarize in current workspace" option
+  - _Scope_: Limited to text selection and page contexts
+  - _Removal_: Can be disabled in future updates if not used
 
-- Chrome 88+ (Manifest V3 support)
-- Chromium-based browsers (Edge, Brave, etc.) with Manifest V3 support
+- **`scripting`**: Inject content scripts for text highlighting functionality
+  - _Usage_: On-demand injection for highlight capture
+  - _Alternative_: Declarative content scripts would require broader permissions
 
-## Contributing
+- **`tabGroups`**: Future feature for grouping tabs by workspace (currently minimal usage)
+  - _Future_: Will enable visual tab organization
+  - _Current_: Minimal usage, feature-gated
 
-1. Follow the existing code style (enforced by ESLint/Prettier)
-2. Add types for all new interfaces
-3. Test in Chrome before submitting
-4. Update documentation for new features
+### Host Permissions
 
-## License
+- **`<all_urls>`**: Required for content script injection and highlight capture across all websites
+  - _Future_: Will make this configurable with user-defined allowlists
+  - _Current_: Necessary for universal highlighting functionality
+
+## 🔧 Troubleshooting
+
+### Extension Won't Load
+
+1. **Check manifest errors:**
+
+   ```bash
+   # Rebuild and check for syntax errors
+   npm run build
+   ```
+
+2. **Verify file structure:**
+
+   ```
+   apps/extension/dist/
+   ├── manifest.json
+   ├── popup.html
+   ├── options.html
+   ├── popup.js
+   ├── background.js
+   ├── content.js
+   └── icons/
+   ```
+
+3. **Check Chrome console:**
+   - Open `chrome://extensions/`
+   - Find Multiverse extension
+   - Click "Errors" to see any loading issues
+
+### Service Worker Issues
+
+1. **Check service worker status:**
+   - Go to `chrome://extensions/`
+   - Find Multiverse extension
+   - Click "service worker" link to open DevTools
+
+2. **Common service worker errors:**
+
+   ```javascript
+   // Check console for these errors:
+   // - Import errors (missing files)
+   // - Syntax errors in background.js
+   // - Permission errors for storage/tabs APIs
+   ```
+
+3. **Restart service worker:**
+   - In extension details, click "Reload" button
+   - Or disable/enable the extension
+
+### Content Script Injection Fails
+
+1. **Check host permissions:**
+   - Ensure `<all_urls>` permission is granted
+   - Check if site blocks content scripts (some do)
+
+2. **Debug content script:**
+
+   ```javascript
+   // Open page console and check for:
+   console.log('Content script loaded'); // Should appear
+   // Check for CSP violations or script errors
+   ```
+
+3. **Test highlighting:**
+   - Select text on any webpage
+   - Should see "Save highlight" pill appear
+   - Check content script console for errors
+
+### OpenAI Integration Issues
+
+1. **API Key Problems:**
+   - Go to Options page
+   - Verify API key format: starts with `sk-`
+   - Test with simple prompt in popup
+
+2. **Network Errors:**
+
+   ```javascript
+   // Check for CORS or network issues
+   // OpenAI API should be accessible from extension context
+   ```
+
+3. **Rate Limiting:**
+   - OpenAI API has rate limits
+   - Check API usage in OpenAI dashboard
+   - Reduce request frequency if needed
+
+### Storage Issues
+
+1. **Storage quota:**
+
+   ```javascript
+   // Check storage usage
+   chrome.storage.local.getBytesInUse(null, (bytes) => {
+     console.log('Storage used:', bytes, 'bytes');
+   });
+   ```
+
+2. **Clear storage:**
+   ```bash
+   # In extension console
+   chrome.storage.local.clear();
+   chrome.storage.sync.clear();
+   ```
+
+### Export/Download Problems
+
+1. **Browser download blocks:**
+   - Check Chrome's download settings
+   - Ensure downloads aren't blocked for extensions
+
+2. **Large export files:**
+   - Browser may block very large downloads
+   - Consider splitting large workspaces
+
+### Development Issues
+
+1. **Build failures:**
+
+   ```bash
+   # Clean and rebuild
+   npm run clean
+   npm run install:all
+   npm run build
+   ```
+
+2. **TypeScript errors:**
+
+   ```bash
+   # Check type errors
+   npm run type-check
+   ```
+
+3. **Hot reload not working:**
+   - Currently manual reload required
+   - Use `npm run dev` and reload extension in Chrome
+
+## 📦 Publishing
+
+1. **Create production build:**
+
+   ```bash
+   npm run zip
+   ```
+
+2. **Verify zip contents:**
+
+   ```bash
+   unzip -l apps/extension/context-switchboard.zip
+   ```
+
+3. **Test thoroughly:**
+   - Load the built extension
+   - Test all core features
+   - Verify in incognito mode
+   - Test on various websites
+
+4. **Submit to Chrome Web Store:**
+   - Upload `context-switchboard.zip`
+   - Complete store listing information
+   - Submit for review
+
+## 🏗️ Architecture
+
+```
+multiverse/
+├── apps/extension/          # Chrome extension
+│   ├── src/
+│   │   ├── popup/          # Extension popup UI
+│   │   ├── options/        # Options page
+│   │   ├── background/     # Service worker
+│   │   ├── content/        # Content scripts
+│   │   ├── components/     # Shared React components
+│   │   ├── hooks/          # React hooks
+│   │   ├── utils/          # Utility functions
+│   │   └── shared/         # Shared types/storage
+│   └── dist/               # Built extension
+├── packages/shared/         # Shared utilities
+│   ├── src/
+│   │   ├── storage.ts      # Storage management
+│   │   ├── utils.ts        # Common utilities
+│   │   └── __tests__/      # Unit tests
+│   └── dist/               # Built package
+└── README.md               # This file
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Ensure linting passes: `npm run lint`
+6. Test the extension thoroughly
+7. Submit a pull request
+
+## 📄 License
 
 [Add your license here]
+
+---
+
+**Note**: This extension is designed with privacy and security as top priorities. All data remains local to your browser, and API keys are stored securely using Chrome's built-in storage APIs.

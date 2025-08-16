@@ -20,7 +20,10 @@
     "type-check": "npm run type-check:shared && npm run type-check:extension",
     "type-check:shared": "cd packages/shared && npm run type-check",
     "type-check:extension": "cd apps/extension && npm run type-check",
-    "zip": "cd apps/extension && npm run zip"
+    "zip": "cd apps/extension && npm run zip",
+    "install:all": "npm install && cd packages/shared && npm install && cd ../../apps/extension && npm install && cd ../..",
+    "clean": "rm -rf node_modules && cd packages/shared && rm -rf node_modules dist && cd ../../apps/extension && rm -rf node_modules dist *.zip && cd ../..",
+    "reset": "npm run clean && npm run install:all"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.0.0",
