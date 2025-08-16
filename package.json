@@ -1,0 +1,38 @@
+{
+  "name": "multiverse",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build:shared && npm run build:extension",
+    "build:shared": "cd packages/shared && npm run build",
+    "build:extension": "cd apps/extension && npm run build",
+    "dev": "npm run dev:shared & npm run dev:extension",
+    "dev:shared": "cd packages/shared && npm run dev",
+    "dev:extension": "cd apps/extension && npm run dev",
+    "lint": "npm run lint:shared && npm run lint:extension",
+    "lint:shared": "cd packages/shared && npm run lint",
+    "lint:extension": "cd apps/extension && npm run lint",
+    "lint:fix": "npm run lint:shared -- --fix && npm run lint:extension -- --fix",
+    "type-check": "npm run type-check:shared && npm run type-check:extension",
+    "type-check:shared": "cd packages/shared && npm run type-check",
+    "type-check:extension": "cd apps/extension && npm run type-check",
+    "zip": "cd apps/extension && npm run zip"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

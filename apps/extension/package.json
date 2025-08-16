@@ -1,0 +1,30 @@
+{
+  "name": "extension",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "vite build && npm run copy-html",
+    "copy-html": "cp dist/src/popup/index.html dist/popup.html && cp dist/src/options/index.html dist/options.html",
+    "zip": "npm run build && cd dist && zip -r ../extension.zip .",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.246",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.0.0",
+    "vite": "^4.4.0",
+    "vite-plugin-web-extension": "^4.1.0"
+  }
+}

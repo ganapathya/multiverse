@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Multiverse",
+  "version": "1.0.0",
+  "description": "Organize your browsing into workspaces with AI-powered features",
+  "permissions": ["storage", "tabs", "scripting", "contextMenus", "activeTab"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Multiverse"
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon-16.svg",
+    "32": "icons/icon-32.svg",
+    "48": "icons/icon-48.svg",
+    "128": "icons/icon-128.svg"
+  }
+}
