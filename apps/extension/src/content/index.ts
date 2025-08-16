@@ -1,4 +1,5 @@
 import { ExtensionStorage, generateId, type SavedText } from '../shared';
+import './highlight'; // Import highlight functionality
 
 class ContentScript {
   private selectedText = '';

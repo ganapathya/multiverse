@@ -3,7 +3,14 @@
   "name": "Multiverse",
   "version": "1.0.0",
   "description": "Organize your browsing into workspaces with AI-powered features",
-  "permissions": ["storage", "tabs", "scripting", "contextMenus", "activeTab"],
+  "permissions": [
+    "tabs",
+    "tabGroups",
+    "storage",
+    "contextMenus",
+    "scripting",
+    "activeTab"
+  ],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js",
@@ -26,5 +33,48 @@
     "32": "icons/icon-32.svg",
     "48": "icons/icon-48.svg",
     "128": "icons/icon-128.svg"
+  },
+
+  "x_permission_rationale": {
+    "tabs": {
+      "why": "Needed to query current window tabs, capture URLs/titles to save/restore tab sets, and open tabs when restoring a workspace.",
+      "least_privilege": "Limit queries to the active window when possible (query({ currentWindow: true })). Avoid reading tab contents; rely on activeTab for page access triggered by user gestures."
+    },
+    "tabGroups": {
+      "why": "Planned support for grouping tabs by workspace and implementing Focus Mode using Chrome tab groups.",
+      "least_privilege": "Request only if/when group features are enabled by the user. Until then, keep usage minimal or feature-gated in Options."
+    },
+    "storage": {
+      "why": "Persist workspaces, tab sets, highlights, and preferences using chrome.storage.local and chrome.storage.sync (for small config).",
+      "least_privilege": "Store only necessary keys and partition data: sync for small config, local for larger payloads. Consider session memory for ephemeral state."
+    },
+    "contextMenus": {
+      "why": "Create right-click actions like ‘Summarize in current workspace’ and ‘Save to workspace’ for selected text.",
+      "least_privilege": "Create menus only for specific contexts (e.g., ['selection']) and remove them when features are disabled."
+    },
+    "scripting": {
+      "why": "Inject or execute content scripts on-demand via chrome.scripting for highlight capture and page interactions.",
+      "least_privilege": "Inject scripts only in response to user actions and only on necessary pages; prefer host allowlists configured in Options."
+    },
+    "activeTab": {
+      "why": "Grant temporary access to the active tab’s contents when the user invokes an action (e.g., context menu, popup button).",
+      "least_privilege": "Prefer activeTab over broader host permissions for one-off reads triggered by explicit user gestures."
+    },
+    "host_permissions": {
+      "<all_urls>": {
+        "why": "Allow content script execution and selection capture across sites for highlight-to-save.",
+        "least_privilege": "Make host access configurable via an allowlist in Options; inject on-demand with scripting and narrow to specific origins over time."
+      }
+    },
+    "background": {
+      "service_worker": {
+        "why": "Run event-driven logic for context menus, storage initialization, messaging, and Focus Mode orchestration.",
+        "least_privilege": "Avoid long-lived state; keep logic event-based. Only register listeners actually in use."
+      }
+    },
+    "options_page": {
+      "why": "Provide a dedicated UI to manage API keys and integrations (e.g., OpenAI, Notion) and feature toggles.",
+      "least_privilege": "Keep secrets in chrome.storage.local only; never bundle API keys in the extension package."
+    }
   }
 }
